@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☕ 口袋美食 & 咖啡廳地圖 | My Coffee Map</title>
+    <style>
+        :root {
+            --bg-color: #FAF6F0;
+            --card-bg: #FFFFFF;
+            --primary: #4A3525;
+            --accent: #D9A05B;
+            --text-muted: #7A6858;
+            --tag-bg: #EFE6DD;
+            --border-radius: 12px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            max-width: 1000px;
+            margin: 40px auto 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .filter-section {
+            max-width: 1000px;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background-color: var(--card-bg);
+            border: 1px solid #E0D5C7;
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--primary);
+            color: #FFF;
+            border-color: var(--primary);
+        }
+
+        .store-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .store-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(74, 53, 37, 0.05);
+            border: 1px solid #F0E8DD;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease;
+        }
+
+        .store-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .store-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .badge-district {
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .mrt-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .summary {
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            color: #5A4839;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background-color: var(--tag-bg);
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--primary);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-detail {
+            background-color: var(--bg-color);
+            color: var(--primary);
+            border: 1px solid #DCD0C0;
+        }
+
+        .btn-map {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        footer {
+            max-width: 1000px;
+            margin: 50px auto 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>☕ 我的口袋美食與咖啡廳地圖</h1>
+        <p>基於 AGENTS.md 自動化維護之日系探店隨手記</p>
+    </header>
+
+    <div class="filter-section">
+        <button class="filter-btn active" onclick="filterStores('all')">全部區域</button>
+        <button class="filter-btn" onclick="filterStores('中山區')">📍 中山區</button>
+        <button class="filter-btn" onclick="filterStores('大安區')">📍 大安區</button>
+        <button class="filter-btn" onclick="filterStores('有插座')">⚡ 有插座</button>
+        <button class="filter-btn" onclick="filterStores('適合辦公')">💻 適合辦公</button>
+    </div>
+
+    <div class="store-grid" id="storeGrid">
+        <div class="store-card" data-district="中山區" data-tags="有插座,北歐風,適合辦公">
+            <div>
+                <div class="card-header">
+                    <div class="store-name">Fika Fika Cafe</div>
+                    <span class="badge-district">中山區</span>
+                </div>
+                <div class="mrt-info">🚇 捷運松江南京站</div>
+                <div class="summary">北歐簡約風名店，烘焙冠軍咖啡豆，採光明亮安靜。</div>
+                <div class="tags-container">
+                    <span class="tag">#有插座</span>
+                    <span class="tag">#北歐風</span>
+                    <span class="tag">#適合辦公</span>
+                </div>
+            </div>
+            <div class="card-actions">
+                <a href="stores/zhongshan-fika-fika.md" class="btn btn-detail">詳細條目</a>
+                <a href="[suspicious link removed]" target="_blank" class="btn btn-map">Google 地圖</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 My Coffee Map · Managed by AI Agent Harness</p>
+    </footer>
+
+    <script>
+        function filterStores(criteria) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const cards = document.querySelectorAll('.store-card');
+            cards.forEach(card => {
+                const district = card.getAttribute('data-district');
+                const tags = card.getAttribute('data-tags');
+                
+                if (criteria === 'all' || district === criteria || tags.includes(criteria)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
